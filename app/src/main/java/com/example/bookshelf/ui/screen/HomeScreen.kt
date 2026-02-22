@@ -41,11 +41,10 @@ import com.example.bookshelf.ui.theme.BookShelfTheme
 fun HomeScreen(
     modifier: Modifier = Modifier,
     bookUiState: BookUiState,
-    retryAction: () -> Unit,
     onBookClicked: (id: String) -> Unit = {},
 ){
     when(bookUiState){
-        is BookUiState.Error -> ErrorScreen(retryAction)
+        is BookUiState.Error -> ErrorScreen(retryAction = { })
         is BookUiState.Loading -> LoadingScreen()
         is BookUiState.Success -> BookGridScreen(
             bookshelf = bookUiState.bookShelf,
