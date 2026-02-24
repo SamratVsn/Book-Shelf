@@ -4,11 +4,20 @@ import com.example.bookshelf.model.BookShelf
 import com.example.bookshelf.model.BookshelfApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
+
+const val APIKEY = "AIzaSyD65sBWsSfGUe3HKNmjSb0oFOJaaF9WHg8"
 
 interface BookApiService {
-    @GET("volumes?q=android&key=AIzaSyD65sBWsSfGUe3HKNmjSb0oFOJaaF9WHg8")
-    suspend fun getBookshelfResponse() : BookshelfApiResponse
+    @GET("volumes")
+    suspend fun getBookshelfResponse(
+        @Query("q") query: String = "android",
+        @Query("key") apiKey: String = APIKEY
+    ): BookshelfApiResponse
 
-    @GET("volumes/{id}&key=AIzaSyD65sBWsSfGUe3HKNmjSb0oFOJaaF9WHg8")
-    suspend fun getBookDetail(@Path("id") id: String): BookShelf
+    @GET("volumes/{id}")
+    suspend fun getBookDetail(
+        @Path("id") id: String,
+        @Query("key") apiKey: String = APIKEY
+    ): BookShelf
 }
