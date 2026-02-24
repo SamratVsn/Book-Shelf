@@ -29,7 +29,6 @@ fun StartScreen(
     modifier: Modifier = Modifier,
     onStartClicked: () -> Unit = {},
 ) {
-
     Column(
         modifier = modifier
             .fillMaxSize()
