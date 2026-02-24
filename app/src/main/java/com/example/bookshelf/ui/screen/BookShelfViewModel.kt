@@ -10,14 +10,13 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import coil.network.HttpException
 import com.example.bookshelf.BookShelfApplication
 import com.example.bookshelf.data.BookShelfRepository
 import com.example.bookshelf.model.BookShelf
 import com.example.bookshelf.model.BookShelfInfo
-import com.example.bookshelf.model.BookshelfApiResponse
 import kotlinx.coroutines.launch
 import okio.IOException
+import retrofit2.HttpException
 
 interface BookUiState{
     data class Success(
@@ -49,14 +48,17 @@ class BookShelfViewModel(private val bookShelfRepository: BookShelfRepository) :
                         currentSelectedBook = result.bookShelfInfo
                     )
             } catch(e: IOException){
+                Log.d("Error Found!", "$e")
                 BookUiState.Error
             } catch(e: HttpException){
+                Log.d("Error Found!", "$e")
                 BookUiState.Error
             }
         }
     }
 
     fun getBookShelf(){
+        if (bookUiState is BookUiState.Success) return
         viewModelScope.launch {
             bookUiState = BookUiState.Loading
             bookUiState = try {

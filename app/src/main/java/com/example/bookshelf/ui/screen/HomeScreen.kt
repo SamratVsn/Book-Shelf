@@ -39,12 +39,13 @@ import com.example.bookshelf.ui.theme.BookShelfTheme
 
 @Composable
 fun HomeScreen(
+    viewModel: BookShelfViewModel,
     modifier: Modifier = Modifier,
     bookUiState: BookUiState,
     onBookClicked: (id: String) -> Unit = {},
 ){
     when(bookUiState){
-        is BookUiState.Error -> ErrorScreen(retryAction = { })
+        is BookUiState.Error -> ErrorScreen(retryAction = { viewModel.getBookShelf() })
         is BookUiState.Loading -> LoadingScreen()
         is BookUiState.Success -> BookGridScreen(
             bookshelf = bookUiState.bookShelf,
@@ -132,7 +133,7 @@ fun BookPhotoCard(
     onBookClicked: (id: String) -> Unit,
 ) {
     Card(onClick = { onBookClicked(bookshelf.id) }, modifier = modifier) {
-        val imageLinkReplace = bookshelf.bookShelfInfo.imageLinks.thumbnail.replace("http", "https")
+        val imageLinkReplace = bookshelf.bookShelfInfo.imageLinks?.thumbnail?.replace("http://", "https://")
         AsyncImage(
             model = ImageRequest.Builder(context = LocalContext.current)
                 .data(imageLinkReplace).crossfade(true).build(),

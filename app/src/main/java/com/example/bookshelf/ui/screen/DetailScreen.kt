@@ -42,23 +42,22 @@ fun BookDetail(book: BookShelfInfo?, modifier: Modifier = Modifier) {
             BookPhotoCard(bookshelf = book)
             Column(modifier = Modifier.padding(vertical = 20.dp)) {
                 Text(
-                    text = book!!.title,
+                    text = book?.title ?: "No title",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Text(text = "Subtitle :", fontWeight = FontWeight.Bold)
-                Text(text = book.subtitle)
+                Text(text = book?.subtitle ?: "N/A")
                 Text(text = "Authors:", fontWeight = FontWeight.Medium)
-                for (authors in book.authors) {
-                    Text(text = authors)
+                book?.authors?.forEach { author ->
+                    Text(text = author)
                 }
-
                 Text(text = "Publisher :", fontWeight = FontWeight.Bold)
-                Text(text = book.publisher)
+                Text(text = book?.publisher ?: "N/A")
                 Text(text = "Publisher date :", fontWeight = FontWeight.Bold)
-                Text(text = book.publishedDate)
+                Text(text = book?.publishedDate ?: "N/A")
                 Text(text = "Description :", fontWeight = FontWeight.Bold)
-                Text(text = book.description)
+                Text(text = book?.description ?: "No description available")
             }
         }
     }
@@ -70,7 +69,7 @@ fun BookPhotoCard(
     bookshelf: BookShelfInfo?,
 ) {
     Card(modifier = modifier) {
-        val imageLinkReplace = bookshelf?.imageLinks?.thumbnail?.replace("http", "https")
+        val imageLinkReplace = bookshelf?.imageLinks?.thumbnail?.replace("http://", "https://")
         AsyncImage(
             model =
                 ImageRequest.Builder(context = LocalContext.current)

@@ -8,7 +8,6 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -25,7 +23,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.bookshelf.R
 import com.example.bookshelf.ui.screen.BookDetailScreen
 import com.example.bookshelf.ui.screen.BookShelfViewModel
 import com.example.bookshelf.ui.screen.HomeScreen
@@ -43,8 +40,6 @@ fun BookShelfApp(
     viewModel: BookShelfViewModel = viewModel(factory = BookShelfViewModel.Factory),
     navController: NavHostController = rememberNavController()
 ){
-    val navController = rememberNavController()
-
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val currentScreen = BookShelfScreen.valueOf(
@@ -80,6 +75,7 @@ fun BookShelfApp(
 
             composable(route = BookShelfScreen.Home.name){
                 HomeScreen(
+                    viewModel = viewModel,
                     bookUiState = viewModel.bookUiState,
                     onBookClicked = {
                         viewModel.setCurrentBook(id = it)
