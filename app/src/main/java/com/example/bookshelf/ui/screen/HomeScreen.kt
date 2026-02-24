@@ -3,6 +3,7 @@ package com.example.bookshelf.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +26,7 @@ import com.example.bookshelf.model.BookShelf
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -32,8 +34,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.bookshelf.ui.theme.BookShelfTheme
 
@@ -108,19 +112,18 @@ fun BookGridScreen(
     modifier: Modifier = Modifier,
     bookshelf: List<BookShelf>,
     onBookClicked: (id: String) -> Unit,
-){
+) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(150.dp),
-        modifier = modifier.padding(horizontal = 4.dp)
+        columns = GridCells.Adaptive(160.dp),
+        modifier = modifier.padding(horizontal = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(vertical = 12.dp)
     ) {
-        items(items = bookshelf, key = {books -> books.id}) { books ->
+        items(items = bookshelf, key = { it.id }) { book ->
             BookPhotoCard(
-                bookshelf = books,
-                onBookClicked = onBookClicked,
-                modifier = modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-                    .height(250.dp)
+                bookshelf = book,
+                onBookClicked = onBookClicked
             )
         }
     }
@@ -132,19 +135,48 @@ fun BookPhotoCard(
     bookshelf: BookShelf,
     onBookClicked: (id: String) -> Unit,
 ) {
-    Card(onClick = { onBookClicked(bookshelf.id) }, modifier = modifier) {
-        val imageLinkReplace = bookshelf.bookShelfInfo.imageLinks?.thumbnail?.replace("http://", "https://")
-        AsyncImage(
-            model = ImageRequest.Builder(context = LocalContext.current)
-                .data(imageLinkReplace).crossfade(true).build(),
-            contentScale = ContentScale.Crop,
-            contentDescription = null,
-            error = painterResource(R.drawable.ic_broken_image),
-            placeholder = painterResource(R.drawable.loading_img),
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
+    Card(
+        onClick = { onBookClicked(bookshelf.id) },
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+            // Cover image
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(bookshelf.bookShelfInfo.imageLinks?.secureThumbnail)
+                    .crossfade(true)
+                    .build(),
+                contentScale = ContentScale.Crop,
+                contentDescription = bookshelf.bookShelfInfo.title,
+                error = painterResource(R.drawable.ic_broken_image),
+                placeholder = painterResource(R.drawable.loading_img),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
+            // Title + author below image
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = bookshelf.bookShelfInfo.title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                bookshelf.bookShelfInfo.authors?.firstOrNull()?.let { author ->
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = author,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
     }
 }
 

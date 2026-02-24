@@ -88,6 +88,7 @@ fun BookShelfApp(
             }
             composable(route = BookShelfScreen.BookDetail.name){
                 BookDetailScreen(
+                    retryAction = { viewModel.retryLastBook() },
                     bookshelfUiState = viewModel.bookUiState,
                     modifier = Modifier
                         .fillMaxSize()

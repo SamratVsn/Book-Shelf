@@ -14,6 +14,7 @@ import com.example.bookshelf.BookShelfApplication
 import com.example.bookshelf.data.BookShelfRepository
 import com.example.bookshelf.model.BookShelf
 import com.example.bookshelf.model.BookShelfInfo
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okio.IOException
 import retrofit2.HttpException
@@ -35,32 +36,32 @@ class BookShelfViewModel(private val bookShelfRepository: BookShelfRepository) :
         getBookShelf()
     }
 
-    fun setCurrentBook(id: String){
+    private var lastSelectedId: String = ""
+
+    fun setCurrentBook(id: String) {
+        lastSelectedId = id
+        val currentBooks = (bookUiState as? BookUiState.Success)?.bookShelf ?: return
         viewModelScope.launch {
             bookUiState = BookUiState.Loading
-
+            delay(1000L)
             bookUiState = try {
                 val result = bookShelfRepository.getBookDetail(id)
-                Log.d("result of book detail", "$result")
-                BookUiState.Success()
-                    .copy(
-                        bookShelf = bookShelfRepository.getBookshelfResponse().items,
-                        currentSelectedBook = result.bookShelfInfo
-                    )
-            } catch(e: IOException){
-                Log.d("Error Found!", "$e")
+                BookUiState.Success(
+                    bookShelf = currentBooks,
+                    currentSelectedBook = result.bookShelfInfo
+                )
+            } catch (e: IOException) {
                 BookUiState.Error
-            } catch(e: HttpException){
-                Log.d("Error Found!", "$e")
+            } catch (e: HttpException) {
                 BookUiState.Error
             }
         }
     }
 
     fun getBookShelf(){
-        if (bookUiState is BookUiState.Success) return
         viewModelScope.launch {
             bookUiState = BookUiState.Loading
+            delay(1000L)
             bookUiState = try {
                 val listResult = bookShelfRepository.getBookshelfResponse().items
                 Log.d("BookshelfDebug", "✅ Data retrieved: ${listResult.size} items")
@@ -77,6 +78,10 @@ class BookShelfViewModel(private val bookShelfRepository: BookShelfRepository) :
                 BookUiState.Error
             }
         }
+    }
+
+    fun retryLastBook() {
+        if (lastSelectedId.isNotEmpty()) setCurrentBook(lastSelectedId)
     }
 
     companion object {
